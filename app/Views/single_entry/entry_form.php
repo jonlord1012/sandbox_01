@@ -13,10 +13,18 @@
 
 <div class="content">
    <div class="container-fluid">
+      <?php if (session()->getFlashdata('message')) : ?>
+      <div class="alert alert-success"><?= session()->getFlashdata('message') ?></div>
+      <?php endif; ?>
+      <?php if (session()->getFlashdata('error')) : ?>
+      <div class="alert alert-danger"><?= session()->getFlashdata('error') ?></div>
+      <?php endif; ?>
       <!-- Current Cart Items -->
       <div class="card">
          <div class="card-header">
-            <h3 class="card-title"><?= lang('App.current_entry') ?></h3>
+            <h3 class="card-title"><?= lang('App.current_entry') ?> :: <b><?= $referenceId; ?> ::
+                  <?= $accountName['name']; ?></b>
+            </h3>
             <div class="card-tools">
                <button type="button" class="btn btn-tool" onclick="loadCart()">
                   <i class="fas fa-sync"></i> <?= lang('App.refresh') ?>
@@ -43,9 +51,10 @@
             </table>
          </div>
          <div class="card-footer">
-            <form action="<?= site_url('transactions/postCart') ?>" method="post" id="postForm">
+            <form action="<?= site_url('single_entry/postCart') ?>" method="post" id="postForm">
                <?= csrf_field() ?>
-               <button type="submit" class="btn btn-success" id="postButton" disabled>
+               <input type="hidden" name="reference_id" value="<?= $referenceId ?>">
+               <button type="submit" class="btn btn-success" id="postButton" enabled>
                   <i class="fas fa-check"></i> <?= lang('Accounting.post_transaction') ?>
                </button>
 
@@ -56,13 +65,14 @@
          </div>
       </div>
 
+
       <!-- Add Entry Form -->
       <div class="card">
          <div class="card-header">
             <h3 class="card-title"><?= lang('App.add_new') ?></h3>
          </div>
          <div class="card-body">
-            <form action="<?= site_url('transactions/addToCart') ?>" method="post" id="entryForm">
+            <form action="<?= site_url('single_entry/addToCart') ?>" method="post" id="entryForm">
                <?= csrf_field() ?>
 
                <div class="row">
@@ -107,7 +117,8 @@
                   <div class="col-md-4">
                      <div class="form-group">
                         <label><?= lang('App.reference') ?> ID</label>
-                        <input type="text" name="reference_id" class="form-control" value="REF-<?= time() ?>">
+                        <input type="text" name="reference_id" class="form-control" value="<?= $referenceId ?>">
+                        <input type="hidden" name="header_account" value="<?= $accountId['account_id'] ?>">
                      </div>
                   </div>
                </div>
@@ -132,8 +143,10 @@
 <script>
 function loadCart() {
    console.log('Loading cart...');
+   var referenceId = '<?= $referenceId ?>';
+   var header_name = '<?= $accountName['name'] ?>';
 
-   fetch('<?= site_url('transactions/getCart') ?>')
+   fetch('<?= site_url('single_entry/getCart/' . $referenceId) ?>')
       .then(response => {
          console.log('Response status:', response.status);
          if (!response.ok) {
@@ -159,7 +172,7 @@ function loadCart() {
             return;
          }
 
-         if (data.length === 0) {
+         if (data.length === 1) {
             tbody.innerHTML = '<tr><td colspan="4" class="text-center"><?= lang('App.empty_grid') ?></td></tr>';
             if (postButton) postButton.disabled = true;
             if (tfoot) tfoot.innerHTML = '';
@@ -170,9 +183,9 @@ function loadCart() {
             const row = document.createElement('tr');
             row.innerHTML = `
                     <td><span class="badge bg-${item.type === 'debit' ? 'danger' : 'success'}">${item.type.toUpperCase()}</span></td>
-                    <td>${item.account_code} - ${item.account_name}</td>
-                    <td>${item.description}</td>
-                    <td class="text-right">${parseFloat(item.amount).toFixed(2)}</td>
+                    <td>${item.account_name != header_name ? '<b>' : ''} ${item.account_code} - ${item.account_name}</td>
+                    <td>${item.account_name != header_name ? '<b>' : ''} ${item.description}</td>
+                    <td class="text-right">${item.account_name != header_name ? '<b>' : ''} ${parseFloat(item.amount).toLocaleString('id-ID', {minimumFractionDigits: 2})}</td>
                     <td class="text-center">
                         <button type="button" class="btn btn-sm btn-danger" onclick="deleteCartItem(${item.id})" title=<?= lang('App.delete') ?>>
                             <i class="fas fa-trash"></i>
@@ -210,7 +223,7 @@ function loadCart() {
 
          // Enable post button if balanced
          if (postButton) {
-            postButton.disabled = totalDebit !== totalCredit;
+            // postButton.disabled = totalDebit !== totalCredit;
          }
          if (balanceStatus) {
             balanceStatus.innerHTML = isBalanced ?
@@ -255,7 +268,7 @@ function clearAllCart() {
       return;
    }
 
-   window.location.href = '<?= site_url('transactions/clearCart') ?>';
+   window.location.href = '<?= site_url('single_entry/clearCart/' . $referenceId) ?>';
 }
 
 // Load cart on page load

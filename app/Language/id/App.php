@@ -22,6 +22,7 @@ return [
    'refresh' => 'Muat Ulang',
    'select' => 'Pilih ',
    'add_new' => 'Tambah Transaksi Baru',
+   'please_login' => 'Tidak dapat mengakses menu.<br/> Silakan login terlebih dahulu.',
 
    // Navigation
    'nav_dashboard' => 'Dasbor',

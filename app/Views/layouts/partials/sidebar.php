@@ -11,11 +11,15 @@
             <img src="<?= base_url('template/img/user-default.jpg') ?>" class="img-circle elevation-2" alt="User Image">
          </div>
          <div class="info">
-            <a href="#" class="d-block"><?= $userData->username ?? 'User' ?></a>
+            <a href="#" class="d-block"><?= $userData->username ?? 'Guest' ?></a>
             <small class="text-light">
                <?php
-               $groups = $userData->getGroups();
-               echo !empty($groups) ? implode(', ', $groups) : 'User';
+               if (!empty($userData)) {
+                  $groups = $userData->getGroups();
+               } else {
+               }
+               echo !empty($groups) ? implode(', ', $groups) : 'Guest';
+
                ?>
             </small>
          </div>
@@ -70,7 +74,16 @@
             <li class="nav-item">
                <a href="#" class="nav-link">
                   <i class="nav-icon fas fa-exclamation-triangle"></i>
-                  <p>No Menu Access</p>
+                  <p><?= lang('App.please_login'); ?></p>
+               </a>
+            </li>
+            <li class="nav-header">
+               <hr class="bg-danger border-2 border-top border-danger">
+            </li>
+            <li class="nav-item">
+               <a href="login" class="nav-link">
+                  <i class="nav-icon fas fa-sign-in-alt mr-2"></i>
+                  <p>Sign In</p>
                </a>
             </li>
             <?php endif; ?>

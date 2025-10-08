@@ -8,45 +8,30 @@
          <a href="<?= site_url('/') ?>" class="nav-link">Home</a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-         <a href="#" class="nav-link">Contact</a>
+         <a href="home" class="nav-link">Contact</a>
       </li>
    </ul>
-   <!-- Right navbar links -->
-   <ul class="navbar-nav ml-auto">
-      <!-- Language Switcher -->
-      <?= $this->include('layouts/partials/language_switcher') ?>
-
-      <!-- Existing notifications and user menu -->
-      <!-- ... -->
-   </ul>
-
+   <?php
+   $currentLang = current_language();
+   $availableLangs = available_languages();
+   ?>
    <!-- Right navbar links -->
    <ul class="navbar-nav ml-auto">
       <!-- Notifications Dropdown Menu -->
       <li class="nav-item dropdown">
          <a class="nav-link" data-toggle="dropdown" href="#">
-            <i class="far fa-bell"></i>
-            <span class="badge badge-warning navbar-badge">15</span>
+            <i class="flag-icon flag-icon-<?= $availableLangs[$currentLang]['flag'] ?>"></i>
+            <?= strtoupper($currentLang) ?>
          </a>
-         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-            <span class="dropdown-item dropdown-header">15 Notifications</span>
-            <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item">
-               <i class="fas fa-envelope mr-2"></i> 4 new messages
-               <span class="float-right text-muted text-sm">3 mins</span>
+         <div class="dropdown-menu dropdown-menu-right p-0">
+            <?php foreach ($availableLangs as $code => $lang): ?>
+            <?php if ($code !== $currentLang): ?>
+            <a href="<?= site_url("language/switch/{$code}") ?>" class="dropdown-item">
+               <i class="flag-icon flag-icon-<?= $lang['flag'] ?> mr-2"></i>
+               <?= $lang['name'] ?>
             </a>
-            <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item">
-               <i class="fas fa-users mr-2"></i> 8 friend requests
-               <span class="float-right text-muted text-sm">12 hours</span>
-            </a>
-            <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item">
-               <i class="fas fa-file mr-2"></i> 3 new reports
-               <span class="float-right text-muted text-sm">2 days</span>
-            </a>
-            <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
+            <?php endif; ?>
+            <?php endforeach; ?>
          </div>
       </li>
       <li class="nav-item">

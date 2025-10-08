@@ -24,6 +24,7 @@ return [
    'add_new' => 'Add New Transaction',
    'current_entry' => 'Current Entry',
    'transaction_cart' => 'Transaction Cart',
+   'please_login' => 'No Menu Access, <br />please Sign In First',
 
    // Navigation
    'nav_dashboard' => 'Dashboard',

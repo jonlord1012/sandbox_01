@@ -6,6 +6,7 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 $routes->get('/', 'Dashboard::index');
+$routes->get('home', 'Home::index');
 $routes->get('language/switch/(:segment)', 'Language::switch/$1');
 
 $routes->group('', ['filter' => 'session'], static function ($routes) {
@@ -43,6 +44,17 @@ $routes->group('', ['filter' => 'session'], static function ($routes) {
    $routes->get('transactions/reverse/(:segment)', 'Transactions::reverse/$1');
    $routes->post('transactions/processReverse', 'Transactions::processReverse');
    $routes->get('transactions/view-with-reversal/(:segment)', 'Transactions::viewWithReversal/$1');
+
+   /* single entry */
+   $routes->get('single_entry', 'SingleEntry::index');
+   $routes->get('single_entry/create', 'SingleEntry::create');
+   $routes->get('single_entry/header/(:segment)', 'SingleEntry::header/$1');
+   $routes->post('single_entry/pick', 'SingleEntry::pick_header');
+   $routes->post('single_entry/addToCart', 'SingleEntry::addEntry');
+   $routes->get('single_entry/getCart/(:segment)', 'SingleEntry::getCart/$1');
+   $routes->get('single_entry/deleteCartItem/(:num)', 'SingleEntry::deleteCartItem/$1');
+   $routes->get('single_entry/clearCart/(:segment)', 'SingleEntry::clearCart/$1');
+   $routes->post('single_entry/postCart', 'SingleEntry::postCart');
 
 
    /* Reports */

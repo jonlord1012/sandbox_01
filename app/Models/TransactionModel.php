@@ -84,6 +84,43 @@ class TransactionModel extends Model
 
       return $builder->get()->getResultArray();
    }
+
+   /**
+    * Get all unique reference IDs for transaction listing
+    */
+   public function getSingleTransactionReferences($startDate = null, $endDate = null)
+   {
+      $builder = $this->db->table('journal_temp');
+      $builder->select('reference_id, max(transaction_date) as transaction_date, min(description) as description, COUNT(*) as entry_count, 
+         case when type = "debit" then SUM(amount) else 0 end as total_debit, 
+         case when type = "credit" then SUM(amount) else 0 end as total_credit,
+         "Un-Posted" as status, 
+         "single_entry/header/" as link')
+         ->groupBy('reference_id, ');
+      $builder->unionAll(function ($subQuery) use ($startDate, $endDate) {
+         $subQuery->select('reference_id, max(transaction_date) as transaction_date, max(description) as description, COUNT(*) as entry_count, SUM(debit) as total_debit, SUM(credit) as total_credit, "Posted" as status, "transactions/view/" as link')
+            ->from('journal');
+         $subQuery->groupBy('reference_id ');
+         $subQuery->orderBy('transaction_date', 'DESC');
+         if ($startDate) {
+            $subQuery->where('transaction_date >=', $startDate);
+         }
+         if ($endDate) {
+            $subQuery->where('transaction_date <=', $endDate);
+         }
+      });
+
+      if ($startDate) {
+         $builder->where('transaction_date >=', $startDate);
+      }
+      if ($endDate) {
+         $builder->where('transaction_date <=', $endDate);
+      }
+      $builder->orderBy('transaction_date', 'DESC');
+
+      return $builder->get()->getResultArray();
+   }
+
    /**
     * Check if a transaction can be reversed (not already reversed)
     */
