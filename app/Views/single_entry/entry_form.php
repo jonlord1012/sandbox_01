@@ -117,7 +117,8 @@
                   <div class="col-md-4">
                      <div class="form-group">
                         <label><?= lang('App.reference') ?> ID</label>
-                        <input type="text" name="reference_id" class="form-control" value="<?= $referenceId ?>">
+                        <input type="text" name="reference_id" class="form-control" value="<?= $referenceId ?>"
+                           readonly>
                         <input type="hidden" name="header_account" value="<?= $accountId['account_id'] ?>">
                      </div>
                   </div>
